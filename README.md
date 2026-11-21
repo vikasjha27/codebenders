@@ -80,5 +80,5 @@ TutorDesk was built with a staged Codebenders IDE workflow. Specialist agents ha
 
 ## Team and license
 
-- Team: `<your name>` *(placeholder, to be completed)*
+- Team: Vikas Jha
 - License: `<to add>` *(placeholder, to be completed)*
