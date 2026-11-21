@@ -1,0 +1,86 @@
+
+ RUN  v2.1.9 /Users/vikasjha/codebenders
+
+stdout | src/__repro__.test.ts > repro > (1) amount 0 paid 0 status Sent -> not Paid
+CHECK1 deriveInvoiceStatus = "Paid"
+
+stdout | src/__repro__.test.ts > repro > (2) Draft due in 2 days -> isDueSoon false
+CHECK2 derived = Draft isDueSoon = true
+
+stdout | src/__repro__.test.ts > repro > (3) Draft invoice due in 10 days -> not in expectedCollections
+CHECK3 30d = {"horizonDays":30,"projectedBalance":850,"expectedCollections":850,"upcomingBills":0}
+
+ ❯ src/__repro__.test.ts (6 tests | 3 failed) 6ms
+   × repro > (1) amount 0 paid 0 status Sent -> not Paid 2ms
+     → expected 'Paid' not to be 'Paid' // Object.is equality
+   × repro > (2) Draft due in 2 days -> isDueSoon false 1ms
+     → expected true to be false // Object.is equality
+   × repro > (3) Draft invoice due in 10 days -> not in expectedCollections 1ms
+     → expected 850 to be +0 // Object.is equality
+stdout | src/__repro__.test.ts > repro > (4) invoice due day 45, no bills -> 30 vs 60 vs 90 differ
+CHECK4 projectedBalance 30 = 0 60 = 850 90 = 850
+
+stdout | src/__repro__.test.ts > repro > (5) saveAppData with throwing set -> false
+CHECK5 saveAppData returned = false
+
+stdout | src/__repro__.test.ts > repro > (6) loadAppData on not json -> error, no set/remove
+CHECK6 error = "Saved data is corrupt (invalid JSON). Starting fresh." calls = ["get:tutordesk:data:v1"] raw after = not json
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/__repro__.test.ts > repro > (1) amount 0 paid 0 status Sent -> not Paid
+AssertionError: expected 'Paid' not to be 'Paid' // Object.is equality
+ ❯ src/__repro__.test.ts:20:19
+     18|     const r = deriveInvoiceStatus(inv({ amount: 0, paidAmount: 0, stat…
+     19|     console.log('CHECK1 deriveInvoiceStatus =', JSON.stringify(r));
+     20|     expect(r).not.toBe('Paid');
+       |                   ^
+     21|   });
+     22| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/__repro__.test.ts > repro > (2) Draft due in 2 days -> isDueSoon false
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/__repro__.test.ts:27:15
+     25|     const r = isDueSoon(invoice, TODAY, 3);
+     26|     console.log('CHECK2 derived =', deriveInvoiceStatus(invoice, TODAY…
+     27|     expect(r).toBe(false);
+       |               ^
+     28|   });
+     29| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/__repro__.test.ts > repro > (3) Draft invoice due in 10 days -> not in expectedCollections
+AssertionError: expected 850 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 850
+
+ ❯ src/__repro__.test.ts:34:37
+     32|     const res = forecastCash({ invoices: [invoice], bills: [], cash: {…
+     33|     console.log('CHECK3 30d =', JSON.stringify(res));
+     34|     expect(res.expectedCollections).toBe(0);
+       |                                     ^
+     35|   });
+     36| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 3 passed (6)
+   Start at  15:21:23
+   Duration  637ms (transform 27ms, setup 42ms, collect 20ms, tests 6ms, environment 285ms, prepare 45ms)
+
